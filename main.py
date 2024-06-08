@@ -15,18 +15,25 @@ pyautogui.FAILSAFE = False
 
 home_guild = discord.Object(1247723267029074002) # Guild object with ID 1247723267029074002
 leave_unauth_guilds = True
-admin_role = discord.utils.get(home_guild.roles, name="Bot Admin")
+
 
 KEY = os.getenv("STEAM_API_KEY")
 steam = Steam(KEY)
 # Ping up
 @bot.event
 async def on_ready():
+    global admin_role
     print(f"Logged in as {bot.user} (ID: {bot.user.id})")
     print("------------------------------------------------------------")
     print("Syncing commands...")
-    if len(bot.guilds) == 1: await tree.sync(guild=home_guild) # Sync slash commands with our server
-    elif len(bot.guilds) >= 2: await tree.sync() # Sync slash commands with all servers
+    home_guild = await bot.fetch_guild(1247894755380297791)  # Fetch the guild object
+    admin_role = discord.utils.get(home_guild.roles, name="Bot Admin")  # Get the admin role
+    
+    if len(bot.guilds) == 1: 
+        await tree.sync(guild=home_guild)  # Sync slash commands with our server
+    elif len(bot.guilds) >= 2: 
+        await tree.sync()  # Sync slash commands with all servers
+
     channel = bot.get_channel(1247894755380297791)
     await channel.send("Admin Bot is Online!")
 
