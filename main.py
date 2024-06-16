@@ -31,7 +31,7 @@ steam = Steam(KEY)
 @bot.event
 async def on_ready():
     channel = bot.get_channel(1247894755380297791)
-    await channel.send("Admin Bot is Online!")
+    await channel.send("BR-BOT 2024, Jhudd073. Bot is now online!")
 
 
 #Commands
