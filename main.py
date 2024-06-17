@@ -35,6 +35,8 @@ async def on_ready():
 
 
 #Commands
+
+# Send a message as admin
 @bot.command(name='adminmessage',help="Sends a message as an admin")
 @commands.has_role('Bot Admin')
 async def adminmessage(ctx, *, message: str):
@@ -49,14 +51,14 @@ async def adminmessage(ctx, *, message: str):
     except Exception as e:
         await ctx.send(f"An error occurred: {e}")
 
-
+# Reboot the match
 @bot.command(name='softrestart', help="Restarts the match")
 @commands.has_role('Bot Admin')
 async def adminmessage(ctx):
     pyautogui.press('esc')
     for i in range(4):
         pyautogui.press('tab')
-        time.sleep(0.05)
+        time.sleep(0.1)
     pyautogui.press('enter')
     pyautogui.press('tab')
     pyautogui.press('enter')
@@ -64,17 +66,19 @@ async def adminmessage(ctx):
     pyautogui.press('enter')
     await ctx.send("Server has been soft rebooted")
 
+
+# Weather command
 @bot.command(name='weather',help="Changes the weather. Can be changed to sunny, partcloudy, cloudy, highfog, sunnywet, sunnysnow, rain, thunder, snow")
 @commands.has_role('Bot Admin')
 async def weather(ctx, *, weather:str):
     pyautogui.press('esc')
     for i in range(4):
         pyautogui.press('tab')
-        time.sleep(0.05)
+        time.sleep(0.1)
     pyautogui.press('enter')
     for i in range(35):
         pyautogui.press('tab')
-        time.sleep(0.03)
+        time.sleep(0.1)
     # paths
     if(weather=="sunny"):
         pyautogui.press('tab')
@@ -82,7 +86,7 @@ async def weather(ctx, *, weather:str):
         time.sleep(0.5)
         for i in range(2):
             pyautogui.press('esc')
-            time.sleep(0.05)
+            time.sleep(0.1)
 
     elif(weather=="partcloudy"):
         for i in range(2):
@@ -92,77 +96,77 @@ async def weather(ctx, *, weather:str):
         time.sleep(0.5)
         for i in range(2):
             pyautogui.press('esc')
-            time.sleep(0.05)
+            time.sleep(0.1)
 
     elif(weather=="cloudy"):
         for i in range(3):
             pyautogui.press('tab')
-            time.sleep(0.03)
+            time.sleep(0.1)
         pyautogui.press('enter')
         time.sleep(0.5)
         for i in range(2):
             pyautogui.press('esc')
-            time.sleep(0.05)
+            time.sleep(0.1)
 
     elif(weather=="highfog"):
         for i in range(4):
             pyautogui.press('tab')
-            time.sleep(0.03)
+            time.sleep(0.1)
         pyautogui.press('enter')
         time.sleep(0.5)
         for i in range(2):
             pyautogui.press('esc')
-            time.sleep(0.05)
+            time.sleep(0.1)
 
     elif(weather=="sunnywet"):
         for i in range(5):
             pyautogui.press('tab')
-            time.sleep(0.03)
+            time.sleep(0.1)
         pyautogui.press('enter')
         time.sleep(0.5)
         for i in range(2):
             pyautogui.press('esc')
-            time.sleep(0.05)
+            time.sleep(0.1)
 
     elif(weather=="sunnysnow"):
         for i in range(6):
             pyautogui.press('tab')
-            time.sleep(0.03)
+            time.sleep(0.1)
         pyautogui.press('enter')
         time.sleep(0.5)
         for i in range(2):
             pyautogui.press('esc')
-            time.sleep(0.05)
+            time.sleep(0.1)
 
     elif(weather=="rain"):
         for i in range(7):
             pyautogui.press('tab')
-            time.sleep(0.03)
+            time.sleep(0.1)
         pyautogui.press('enter')
         time.sleep(0.5)
         for i in range(2):
             pyautogui.press('esc')
-            time.sleep(0.05)
+            time.sleep(0.1)
 
     elif(weather=="thunder"):
         for i in range(8):
             pyautogui.press('tab')
-            time.sleep(0.03)
+            time.sleep(0.1)
         pyautogui.press('enter')
         time.sleep(0.5)
         for i in range(2):
             pyautogui.press('esc')
-            time.sleep(0.05)
+            time.sleep(0.1)
 
     elif(weather=="snow"):
         for i in range(9):
             pyautogui.press('tab')
-            time.sleep(0.03)
+            time.sleep(0.1)
         pyautogui.press('enter')
         time.sleep(0.5)
         for i in range(2):
             pyautogui.press('esc')
-            time.sleep(0.05)
+            time.sleep(0.1)
     else:
         await ctx.send("Invalid weather.")
     await ctx.send("Weather changed")
@@ -180,11 +184,11 @@ async def banid(ctx, id: str, length:str, reason:str="Default Reason."):
     pyautogui.press('esc')
     for i in range(3):
         pyautogui.press('tab')
-        time.sleep(0.05)    
+        time.sleep(0.1)    
     pyautogui.press('enter')
     for i in range(2):
         pyautogui.press('tab')
-        time.sleep(0.05)
+        time.sleep(0.1)
     pyautogui.press('enter')
     pyautogui.press('tab')
     pyautogui.press('enter') 
@@ -192,14 +196,14 @@ async def banid(ctx, id: str, length:str, reason:str="Default Reason."):
     pyautogui.press('enter')
     for i in range(5):
         pyautogui.press('tab')
-        time.sleep(0.03)
+        time.sleep(0.1)
     pyautogui.press('enter')
     pyautogui.typewrite(f"You have been banned by a Discord admin for reason: {reason}. You may appeal this ban in the Discord.")
     pyautogui.press('enter')
     if(length=='10'):
         for i in range(7):
             pyautogui.press('tab')
-            time.sleep(0.05)
+            time.sleep(0.1)
         pyautogui.press('enter')
         pyautogui.press('esc')
         pyautogui.press('esc')
@@ -207,7 +211,7 @@ async def banid(ctx, id: str, length:str, reason:str="Default Reason."):
     elif(length=='inf'):
         for i in range(6):
             pyautogui.press('tab')
-            time.sleep(0.05)
+            time.sleep(0.1)
         pyautogui.press('enter')
         pyautogui.press('tab')
         pyautogui.press('enter')
@@ -238,6 +242,7 @@ async def hardrestart(ctx):
     pyautogui.press('enter')
     await ctx.send("Server has been hard rebooted")
 
+# Set the time
 @bot.command(name='settime', help="Sets the time in 24 hr whole number format")
 @commands.has_role('Bot Admin')
 async def settime(ctx, timesetting:str):
@@ -246,16 +251,16 @@ async def settime(ctx, timesetting:str):
     time.sleep(0.1)
     for i in range(4):
         pyautogui.press('tab')
-        time.sleep(0.05)
+        time.sleep(0.1)
     pyautogui.press('enter')
     for i in range(28):
         pyautogui.press('tab')
-        time.sleep(0.03)
+        time.sleep(0.1)
     pyautogui.press('enter')
     pyautogui.typewrite(timesetting)
     pyautogui.press('enter')
     pyautogui.press('esc')
-    time.sleep(0.03)
+    time.sleep(0.1)
     pyautogui.press('esc')
     await ctx.send(f"Time changed to {timesetting}.")
 
