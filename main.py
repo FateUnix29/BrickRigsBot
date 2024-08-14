@@ -1,225 +1,213 @@
-import os
-
-import discord
-from discord.ext import commands
-from dotenv import load_dotenv
-import pyautogui
-import time
-from steam_web_api import Steam
-import pydirectinput
-import subprocess
-import pyautogui
-import numpy as np
-import cv2
-import pytesseract
-from threading import Thread
-import helpers
+###################################################################################################################
+##                                                                                                               ##
+##                                             Brick Rigs Server Bot                                             ##
+##     A Discord bot that allows you to control (specifically, regarding moderation) your Brick Rigs server.     ##
+##                                                                                                               ##
+##                                   Authored by JHudd073 (Discord: @jhudd435)                                   ##
+##                        App commands: Copper (GitHub: FateUnix29, Discord: @destiny_29)                        ##
+##                                                                                                               ##
+##                     Find the bot on GitHub here: https://github.com/JHudd073/BrickRigsBot                     ##
+##                                                                                                               ##
+###################################################################################################################
 
 
-load_dotenv()
-TOKEN = os.getenv('DISCORD_TOKEN')
+###  Modules  ###
+import os                                      # Operating System | Functionality such as file system management, environment variables, etc.
+import discord                                 # Discord API      | Discord bot framework (In Python).
+from discord import app_commands               # Discord API      | App/slash commands.
+import pyautogui                               # GUI automation   | Allows for interaction with GUI in Python.                  
+import time                                    # Time             | Timing.
+import subprocess                              # Subprocess       | Running shell commands, other processes, etc.
 
-bot = commands.Bot(command_prefix='!',intents=discord.Intents.all())
+### Src files ###
+from utils_extras import print, FM             # Utilities        | Colored printing.
+from functions import *                        # Functions        | Various functions.
+
+###    Init   ###
+os.system("color") # Terminal coloring support.
+
+### Constants ###
+DT_TOKEN_NAME = "DISCORD_TOKEN"                  # Name of Discord token environment variable
+BOT_CHANNEL_ID = 1247894755380297791  # The ID of the channel you want the bot to send stuff like it's boot message to
+
+###  Globals  ###
+TOKEN = os.getenv(DT_TOKEN_NAME)
+
+#bot = commands.Bot(command_prefix='!',intents=discord.Intents.all())
+bot = discord.Client(intents=discord.Intents.all())
+tree = app_commands.CommandTree(bot)
 adminprefix = "admin_bot: "
 pyautogui.FAILSAFE = False
 
-
-
-KEY = os.getenv("STEAM_API_KEY")
-steam = Steam(KEY)
 # Ping up
 @bot.event
 async def on_ready():
+    print(f"{FM.success} Logged in as {bot.user} ({bot.user.id})")
     channel = bot.get_channel(1247894755380297791)
-    await channel.send("BR-BOT 2024, Jhudd073. Bot is now online!")
+    # Create a fancy embed
+    embed = discord.Embed(title="Online - BR-BOT 2024", description="Authored by JHudd073 (@jhudd435).\nThe Brick Rigs bot is now online.", color=0x00ff00)
+    await channel.send("Bot is online!", embed=embed)
 
 
 #Commands
 
 # Send a message as admin
-@bot.command(name='adminmessage',help="Sends a message as an admin")
-@commands.has_role('Bot Admin')
-async def adminmessage(ctx, *, message: str):
-    try:
-        pyautogui.typewrite('j')
-        pyautogui.typewrite(f'{ctx.author.name}@Discord: {message}')
-        time.sleep(0.05)
-        pyautogui.press('enter')
-
-        await ctx.send("Message sent!")
-        time.sleep(0.05)
-    except Exception as e:
-        await ctx.send(f"An error occurred: {e}")
+@tree.command(name='adminmessage',description="Sends a message as an admin")
+async def adminmessage(ctx, message: str):
+    if roles_check(ctx.author, ctx.guild, ['Bot Admin']):
+        press_button('j')
+        write_text(f"{ctx.author.display_name}@Discord: {message}", ending_char="enter")
+        await ctx.response.send_message("Message sent!")
+    else:
+        print(f"{FM.info} User {ctx.user.display_name} did not have permissions to run adminmessage.")
+        await ctx.response.send_message("You do not have permission to run this command.")
 
 # Reboot the match
-@bot.command(name='softrestart', help="Restarts the match")
-@commands.has_role('Bot Admin')
+@tree.command(name='softrestart', description="Restarts the match")
 async def adminmessage(ctx):
-    pyautogui.press('esc')
-    for i in range(4):
-        pyautogui.press('tab')
-        time.sleep(0.1)
-    pyautogui.press('enter')
-    pyautogui.press('tab')
-    pyautogui.press('enter')
-    time.sleep(0.5)
-    pyautogui.press('enter')
-    await ctx.send("Server has been soft rebooted")
+    if roles_check(ctx.author, ctx.guild, ['Bot Admin']):
+        press_button("esc")
+        cycle_menu(4)
+        press_button_combo(['enter', 'tab', 'enter'], seperation=0)
+        time.sleep(0.5)
+        press_button('enter')
+        await ctx.response.send_message("Server has been soft rebooted.")
+    else:
+        print(f"{FM.info} User {ctx.user.display_name} did not have permissions to run softrestart.")
+        await ctx.response.send_message("You do not have permission to run this command.")
 
 
 # Weather command
-@bot.command(name='weather',help="Changes the weather. Can be changed to sunny, partcloudy, cloudy, highfog, sunnywet, sunnysnow, rain, thunder, snow")
-@commands.has_role('Bot Admin')
-async def weather(ctx, *, weather:str):
-    pyautogui.press('esc')
-    for i in range(4):
-        pyautogui.press('tab')
-        time.sleep(0.1)
-    pyautogui.press('enter')
-    for i in range(35):
-        pyautogui.press('tab')
-        time.sleep(0.1)
-    # paths
-    if(weather=="sunny"):
-        pyautogui.press('tab')
-        pyautogui.press('enter')
-        time.sleep(0.5)
-        for i in range(2):
-            pyautogui.press('esc')
-            time.sleep(0.1)
+@tree.command(name='weather', description="Changes the weather. Enter 'list' for available weather options.")
+async def weather(ctx, weather: str):
+    if roles_check(ctx.author, ctx.guild, ['Bot Admin']):
+        press_button('esc')
+        cycle_menu(4)
+        press_button('enter')
+        cycle_menu(35)
+        
+        # paths
+        match weather:
+            case "sunny":
+                press_button_combo(['tab', 'enter'])
+                time.sleep(0.1)
+                press_button_combo(['esc', 'esc'])
+                ctx.response.send_message(f"Successfully changed weather to '{weather}'.")
 
-    elif(weather=="partcloudy"):
-        for i in range(2):
-            pyautogui.press('tab')
-            time.sleep(0.03)
-        pyautogui.press('enter')
-        time.sleep(0.5)
-        for i in range(2):
-            pyautogui.press('esc')
-            time.sleep(0.1)
+            case "partly_cloudy":
+                cycle_menu(2)
+                press_button('enter')
+                time.sleep(0.1)
+                press_button_combo(['esc', 'esc'])
+                ctx.response.send_message(f"Successfully changed weather to '{weather}'.")
 
-    elif(weather=="cloudy"):
-        for i in range(3):
-            pyautogui.press('tab')
-            time.sleep(0.1)
-        pyautogui.press('enter')
-        time.sleep(0.5)
-        for i in range(2):
-            pyautogui.press('esc')
-            time.sleep(0.1)
+            case "cloudy":
+                cycle_menu(3)
+                press_button('enter')
+                time.sleep(0.1)
+                press_button_combo(['esc', 'esc'])
+                ctx.response.send_message(f"Successfully changed weather to '{weather}'.")
 
-    elif(weather=="highfog"):
-        for i in range(4):
-            pyautogui.press('tab')
-            time.sleep(0.1)
-        pyautogui.press('enter')
-        time.sleep(0.5)
-        for i in range(2):
-            pyautogui.press('esc')
-            time.sleep(0.1)
+            case "highfog":
+                cycle_menu(4)
+                press_button('enter')
+                time.sleep(0.1)
+                press_button_combo(['esc', 'esc'])
+                ctx.response.send_message(f"Successfully changed weather to '{weather}'.")
 
-    elif(weather=="sunnywet"):
-        for i in range(5):
-            pyautogui.press('tab')
-            time.sleep(0.1)
-        pyautogui.press('enter')
-        time.sleep(0.5)
-        for i in range(2):
-            pyautogui.press('esc')
-            time.sleep(0.1)
+            case "sunnywet":
+                cycle_menu(5)
+                press_button('enter')
+                time.sleep(0.1)
+                press_button_combo(['esc', 'esc'])
+                ctx.response.send_message(f"Successfully changed weather to '{weather}'.")
 
-    elif(weather=="sunnysnow"):
-        for i in range(6):
-            pyautogui.press('tab')
-            time.sleep(0.1)
-        pyautogui.press('enter')
-        time.sleep(0.5)
-        for i in range(2):
-            pyautogui.press('esc')
-            time.sleep(0.1)
+            case "sunnysnow":
+                cycle_menu(6)
+                press_button('enter')
+                time.sleep(0.1)
+                press_button_combo(['esc', 'esc'])
+                ctx.response.send_message(f"Successfully changed weather to '{weather}'.")
 
-    elif(weather=="rain"):
-        for i in range(7):
-            pyautogui.press('tab')
-            time.sleep(0.1)
-        pyautogui.press('enter')
-        time.sleep(0.5)
-        for i in range(2):
-            pyautogui.press('esc')
-            time.sleep(0.1)
+            case "rain":
+                cycle_menu(7)
+                press_button('enter')
+                time.sleep(0.1)
+                press_button_combo(['esc', 'esc'])
+                ctx.response.send_message(f"Successfully changed weather to '{weather}'.")
 
-    elif(weather=="thunder"):
-        for i in range(8):
-            pyautogui.press('tab')
-            time.sleep(0.1)
-        pyautogui.press('enter')
-        time.sleep(0.5)
-        for i in range(2):
-            pyautogui.press('esc')
-            time.sleep(0.1)
+            case "thunder":
+                cycle_menu(8)
+                press_button('enter')
+                time.sleep(0.1)
+                press_button_combo(['esc', 'esc'])
+                ctx.response.send_message(f"Successfully changed weather to '{weather}'.")
 
-    elif(weather=="snow"):
-        for i in range(9):
-            pyautogui.press('tab')
-            time.sleep(0.1)
-        pyautogui.press('enter')
-        time.sleep(0.5)
-        for i in range(2):
-            pyautogui.press('esc')
-            time.sleep(0.1)
+            case "snow":
+                cycle_menu(9)
+                press_button('enter')
+                time.sleep(0.1)
+                press_button_combo(['esc', 'esc'])
+                ctx.response.send_message(f"Successfully changed weather to '{weather}'.")
+            
+            case "list":
+                ctx.response.send_message("""Available weather options:
+                sunny
+                partly_cloudy
+                cloudy
+                highfog
+                sunnywet
+                sunnysnow
+                rain
+                thunder
+                snow""".replace("\t", ""))
+            case _:
+                await ctx.response.send_message("Invalid weather option. Try 'list' for available weather options.")
     else:
-        await ctx.send("Invalid weather.")
-    await ctx.send("Weather changed")
+        print(f"{FM.info} User {ctx.user.display_name} did not have permissions to run weather.")
+        await ctx.response.send_message("You do not have permission to run this command.")
     
 
 
 
 # ban command
-@bot.command(name='banid', help="Bans a user by their steam64 ID")
-@commands.has_role('Bot Admin')
-async def banid(ctx, id: str, length:str, reason:str="Default Reason."):
-    guild = ctx.guild
-    user = steam.users.get_user_details(id)
-    username = user['player']['personaname']
-    pyautogui.press('esc')
-    for i in range(3):
-        pyautogui.press('tab')
-        time.sleep(0.1)    
-    pyautogui.press('enter')
-    for i in range(2):
-        pyautogui.press('tab')
-        time.sleep(0.1)
-    pyautogui.press('enter')
-    pyautogui.press('tab')
-    pyautogui.press('enter') 
-    pyautogui.typewrite(str(id))
-    pyautogui.press('enter')
-    for i in range(5):
-        pyautogui.press('tab')
-        time.sleep(0.1)
-    pyautogui.press('enter')
-    pyautogui.typewrite(f"You have been banned by a Discord admin for reason: {reason}. You may appeal this ban in the Discord.")
-    pyautogui.press('enter')
-    if(length=='10'):
-        for i in range(7):
-            pyautogui.press('tab')
-            time.sleep(0.1)
-        pyautogui.press('enter')
-        pyautogui.press('esc')
-        pyautogui.press('esc')
-        await ctx.send(f"{id} AKA {username} banned for 10 minutes, reason {reason}")
-    elif(length=='inf'):
-        for i in range(6):
-            pyautogui.press('tab')
-            time.sleep(0.1)
-        pyautogui.press('enter')
-        pyautogui.press('tab')
-        pyautogui.press('enter')
-        pyautogui.press('esc')
-        pyautogui.press('esc')
-        await ctx.send(f"{id} AKA {username} banned for infinity, reason {reason}")
+@tree.command(name='banid', description="Bans a user by their steam64 ID")
+async def banid(ctx, id: str, length_min: int = 0, length_hr: int = 0, length_day: int = 0, length_sec: int = 0, inf: bool = False, reason: str = "No reason given"):
+    if roles_check(ctx.author, ctx.guild, ['Bot Admin']):
+        press_button('esc')
+        cycle_menu(3)
+        press_button('enter')
+        cycle_menu(2)
+        press_button_combo(['enter', 'tab', 'enter'])
+        write_text(str(id), ending_char='enter')
+        cycle_menu(5)
+        write_text(str(reason), "enter", "enter")
+        cycle_menu(2)
+        write_text(str(length_day), "enter", "enter")
+        press_button("tab")
+        write_text(str(length_hr), "enter", "enter")
+        press_button("tab")
+        write_text(str(length_min), "enter", "enter")
+        press_button("tab")
+        write_text(str(length_sec), "enter", "enter")
+        press_button("tab")
+        if inf: press_button("enter")
+        press_button_combo(["tab", "enter", "esc", "esc"])
+        ban_time_str = ""
+        if length_day != 0: ban_time_str += f"{length_day} days, "
+        if length_hr != 0: ban_time_str += f"{length_hr} hours, "
+        if length_min != 0: ban_time_str += f"{length_min} minutes, "
+        if length_sec != 0: ban_time_str += f"{length_sec} seconds"
+        ban_time_str.rstrip(", ")
+        if inf:
+            ban_time_str = "infinity"
+        elif not inf and ban_time_str == "": ban_time_str = "????????"
+        embed = discord.Embed(title="Banned", description=f"User `{str(id)}` has been banned for {ban_time_str} for `{reason}`.", color=0x2ecc71)
+        ctx.response.send_message(embed=embed)
     else:
-        await ctx.send("At this time, banning someone for a time other than 10 or inf is not supported.")
+        print(f"{FM.info} User {ctx.user.display_name} did not have permissions to run banid.")
+        await ctx.response.send_message("You do not have permission to run this command.")
+        
 
 # hard reboot command
 def killbr():
@@ -228,47 +216,34 @@ def killbr():
 def startbr():
     os.startfile("steam://rungameid/552100")
 
-@bot.command(name='hardrestart', help="Kills the server and then starts it again")
-@commands.has_role('Bot Admin')
+@tree.command(name='hardrestart', description="Kills the server and then starts it again")
 async def hardrestart(ctx):
-    guild = ctx.guild
-    await ctx.send("Restarting server...")
-    killbr()
-    time.sleep(5)
-    startbr()
-    time.sleep(25)
-    pyautogui.press('enter')
-    pyautogui.press('tab')
-    pyautogui.press('enter')
-    await ctx.send("Server has been hard rebooted")
+    if roles_check(ctx.author, ctx.guild, ['Bot Admin']):
+        await ctx.response.send_message("Restarting server...")
+        killbr()
+        time.sleep(5)
+        startbr()
+        time.sleep(25)
+        press_button_combo(['enter', 'tab', 'enter'])
+        await ctx.channel.send("Server has been hard rebooted")
+    else:
+        print(f"{FM.info} User {ctx.user.display_name} did not have permissions to run hardrestart.")
+        await ctx.response.send_message("You do not have permission to run this command.")
 
 # Set the time
 @bot.command(name='settime', help="Sets the time in 24 hr whole number format")
-@commands.has_role('Bot Admin')
 async def settime(ctx, timesetting:str):
-    guild = ctx.guild
-    pyautogui.press('esc')
-    time.sleep(0.1)
-    for i in range(4):
-        pyautogui.press('tab')
+    if roles_check(ctx.author, ctx.guild, ['Bot Admin']):
+        press_button('esc')
         time.sleep(0.1)
-    pyautogui.press('enter')
-    for i in range(28):
-        pyautogui.press('tab')
-        time.sleep(0.1)
-    pyautogui.press('enter')
-    pyautogui.typewrite(timesetting)
-    pyautogui.press('enter')
-    pyautogui.press('esc')
-    time.sleep(0.1)
-    pyautogui.press('esc')
-    await ctx.send(f"Time changed to {timesetting}.")
-
-
-
-@bot.event
-async def on_command_error(ctx, error):
-    if isinstance(error, commands.errors.CheckFailure):
-        await ctx.send('You do not have the correct role for this command.')
+        cycle_menu(4)
+        press_button('enter')
+        cycle_menu(28)
+        write_text(timesetting, "enter", "enter")
+        press_button_combo(['esc', 'esc'])
+        await ctx.response.send_message(f"Time changed to {timesetting}.")
+    else:
+        print(f"{FM.info} User {ctx.user.display_name} did not have permissions to run settime.")
+        await ctx.response.send_message("You do not have permission to run this command.")
 
 bot.run(TOKEN)
