@@ -48,7 +48,7 @@ async def on_ready():
     embed = discord.Embed(title="Online - BR-BOT 2024", description="Authored by JHudd073 (@jhudd435).\nThe Brick Rigs bot is now online.", color=0x00ff00)
     await channel.send("Bot is online!", embed=embed)
     print(f"{FM.trying} Attempting sync...")
-    tree.sync()
+    await tree.sync()
     print(f"{FM.success} Synced to all servers.")
 
 
