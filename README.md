@@ -6,7 +6,7 @@
 
 Follow this tutorial down to step 7 of "Customizing and Authorizing bot": https://www.geeksforgeeks.org/discord-bot-in-python/
 
-Copy the id of the channel you want bot commands to be sent to. Also, create a "Bot Admin" role and assign it to people you want to be able to use the bot.
+Copy the id of the channel you want bot commands to be sent to. Also, create a "Bot Admin" role and assign it to people you want to be able to use the bot.<br><br>
 
 In order to use the bot, you must set an environment variable, either user or system, preferably named "DISCORD_TOKEN", with the value being your key in plain text.
 
@@ -32,7 +32,7 @@ And then...
 
 Press OK, then press the other OK at the bottom of the environment variables window, and finally close out of 'System Properties' (the window opened when you typed in 'path').
 From there, restart any terminal you had open, or any applications (such as VSCode) that contain an inbuilt terminal that can interface with the environment (such as VSCode's integrated terminal)
-You should be good to go!
+You should be good to go!<br><br>
 
 The bot should be ready to run. Just run the application, be aware that commands sent will control your mouse and keyboard and the Brick Rigs game window must be open and in focus.
 
