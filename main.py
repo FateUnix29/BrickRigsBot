@@ -51,18 +51,7 @@ async def on_ready():
     await tree.sync()
     print(f"{FM.success} Synced to all servers.")
 
-@bot.event
-async def on_message(message):
-    if message.author == bot.user: return
-    if message.channel.id != 1247894755380297791: return
-    print('message recieved, interaction :D')
-    if message == "!sync":
-        print(f"{FM.trying} Attempting sync...")
-        await tree.sync()
-        print(f"{FM.success} Synced to all servers.")
-
-
-#Commands
+# Commands
 
 # Send a message as admin
 @tree.command(name='adminmessage',description="Sends a message as an admin")
