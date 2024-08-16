@@ -47,6 +47,9 @@ async def on_ready():
     # Create a fancy embed
     embed = discord.Embed(title="Online - BR-BOT 2024", description="Authored by JHudd073 (@jhudd435).\nThe Brick Rigs bot is now online.", color=0x00ff00)
     await channel.send("Bot is online!", embed=embed)
+    print(f"{FM.trying} Attempting sync...")
+    tree.sync()
+    print(f"{FM.success} Synced to all servers.")
 
 
 #Commands
@@ -244,6 +247,18 @@ async def settime(ctx, timesetting:str):
         await ctx.response.send_message(f"Time changed to {timesetting}.")
     else:
         print(f"{FM.info} User {ctx.user.display_name} did not have permissions to run settime.")
+        await ctx.response.send_message("You do not have permission to run this command.")
+
+@tree.command(name="force_sync", description="Sync the commands of this bot to the servers it is in.")
+async def forcesynccmd(ctx):
+    if roles_check(ctx.author, ctx.guild, ['Bot Admin']):
+        print(f"{FM.trying} Attempting sync...")
+        ctx.response.send_message("Attempting sync...")
+        tree.sync()
+        print(f"{FM.success} Synced to all servers.")
+        ctx.channel.send("Synced to all servers.")
+    else:
+        print(f"{FM.info} User {ctx.user.display_name} did not have permissions to run force_sync.")
         await ctx.response.send_message("You do not have permission to run this command.")
 
 bot.run(TOKEN)
