@@ -31,7 +31,9 @@ And then...
 ![image](https://github.com/user-attachments/assets/0aee4b38-3d9a-4c92-9f29-e57e2e910a9c)
 
 Press OK, then press the other OK at the bottom of the environment variables window, and finally close out of 'System Properties' (the window opened when you typed in 'path').
+
 From there, restart any terminal you had open, or any applications (such as VSCode) that contain an inbuilt terminal that can interface with the environment (such as VSCode's integrated terminal)
+
 You should be good to go!<br><br>
 
 The bot should be ready to run. Just run the application, be aware that commands sent will control your mouse and keyboard and the Brick Rigs game window must be open and in focus.
