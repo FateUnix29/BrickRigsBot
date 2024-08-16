@@ -231,7 +231,7 @@ async def hardrestart(ctx):
         await ctx.response.send_message("You do not have permission to run this command.")
 
 # Set the time
-@bot.command(name='settime', help="Sets the time in 24 hr whole number format")
+@tree.command(name='settime', description="Sets the time in 24 hr whole number format")
 async def settime(ctx, timesetting:str):
     if roles_check(ctx.author, ctx.guild, ['Bot Admin']):
         press_button('esc')
