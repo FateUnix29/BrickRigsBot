@@ -51,6 +51,16 @@ async def on_ready():
     await tree.sync()
     print(f"{FM.success} Synced to all servers.")
 
+@bot.event
+async def on_message(message):
+    if message.author == bot.user: return
+    if message.channel.id != 1247894755380297791: return
+    print('message recieved, interaction :D')
+    if message == "!sync":
+        print(f"{FM.trying} Attempting sync...")
+        await tree.sync()
+        print(f"{FM.success} Synced to all servers.")
+
 
 #Commands
 
@@ -254,7 +264,7 @@ async def forcesynccmd(ctx):
     if roles_check(ctx.author, ctx.guild, ['Bot Admin']):
         print(f"{FM.trying} Attempting sync...")
         ctx.response.send_message("Attempting sync...")
-        tree.sync()
+        await tree.sync()
         print(f"{FM.success} Synced to all servers.")
         ctx.channel.send("Synced to all servers.")
     else:
