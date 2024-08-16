@@ -4,8 +4,6 @@
 
 Run the setup.exe file in releases.
 
-Get a steam api key at https://steamcommunity.com/dev/apikey
-
 Follow this tutorial down to step 7 of "Customizing and Authorizing bot": https://www.geeksforgeeks.org/discord-bot-in-python/
 
 Copy the id of the channel you want bot commands to be sent to. Also, create a "Bot Admin" role and assign it to people you want to be able to use the bot.
